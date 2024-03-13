@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WPFPersonalTracking.ViewModels;
 
 namespace WPFPersonalTracking
 {
@@ -19,6 +20,18 @@ namespace WPFPersonalTracking
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void btnDepartment_Click(object sender, RoutedEventArgs e)
+        {
+            lblWindowName.Content = "Department List";
+            DataContext = new DepartmentViewModel();
+        }
+
+        private void btnPosition_Click(object sender, RoutedEventArgs e)
+        {
+            lblWindowName.Content = "Position List";
+            DataContext = new PositionViewModel();
         }
     }
 }
