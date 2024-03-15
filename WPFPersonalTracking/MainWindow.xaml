@@ -60,7 +60,7 @@
                 Grid.Row="1"
                 Width="250"
                 Height="60"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left" Click="btnEmployee_Click">
                 <Grid Width="230">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
@@ -300,6 +300,11 @@
             <views:PositionList>
 
             </views:PositionList>
+        </DataTemplate>
+        <DataTemplate x:Name="EmployeeTemplate" DataType="{x:Type viewmodels:EmployeeViewModel}">
+            <views:EmployeeList>
+
+            </views:EmployeeList>
         </DataTemplate>
 
     </Window.Resources>

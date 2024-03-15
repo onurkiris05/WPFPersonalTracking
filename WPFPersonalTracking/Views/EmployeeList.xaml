@@ -1,0 +1,213 @@
+﻿<UserControl
+    x:Class="WPFPersonalTracking.Views.EmployeeList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:WPFPersonalTracking.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    FontSize="18"
+    FontWeight="Bold"
+    mc:Ignorable="d" Loaded="UserControl_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="6*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <DataGrid
+            x:Name="gridEmployee"
+            Grid.Row="1"
+            Grid.ColumnSpan="5"
+            AutoGenerateColumns="False"
+            IsReadOnly="True"
+            SelectionMode="Single">
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Id}"
+                    Header="Id"
+                    Visibility="Hidden" />
+                <DataGridTextColumn
+                    Width="0.5*"
+                    Binding="{Binding UserNo}"
+                    Header="UserNo" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Name}"
+                    Header="Name" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Surname}"
+                    Header="Surname" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding PositionName}"
+                    Header="Position Name" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding DepartmentName}"
+                    Header="Department Name Name" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Salary}"
+                    Header="Salary" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding PositionId}"
+                    Header="PositionId"
+                    Visibility="Hidden" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding DepartmentId}"
+                    Header="DepartmentId"
+                    Visibility="Hidden" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding isAdmin}"
+                    Header="isAdmin"
+                    Visibility="Hidden" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Birthday}"
+                    Header="BirthDay"
+                    Visibility="Hidden" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Adress}"
+                    Header="Adress"
+                    Visibility="Hidden" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Password}"
+                    Header="Password"
+                    Visibility="Hidden" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Grid Grid.ColumnSpan="5">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60*" />
+                <ColumnDefinition Width="100*" />
+                <ColumnDefinition Width="60*" />
+                <ColumnDefinition Width="100*" />
+                <ColumnDefinition Width="80*" />
+            </Grid.ColumnDefinitions>
+            <Label
+                Width="78"
+                Height="34"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="UserNo" />
+            <TextBox
+                x:Name="txtUserNo"
+                Grid.Column="1"
+                Height="26"
+                Margin="0,0,0,0"
+                TextWrapping="Wrap" />
+            <Label
+                Grid.Row="1"
+                Width="78"
+                Height="34"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Name" />
+            <TextBox
+                x:Name="txtName"
+                Grid.Row="1"
+                Grid.Column="1"
+                Height="26"
+                Margin="0,0,0,0"
+                TextWrapping="Wrap" />
+            <Label
+                Grid.Row="2"
+                Width="78"
+                Height="34"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Surname" />
+            <TextBox
+                x:Name="txtSurname"
+                Grid.Row="2"
+                Grid.Column="1"
+                Height="26"
+                Margin="0,0,0,0"
+                TextWrapping="Wrap" />
+            <Label
+                Grid.Column="2"
+                Width="Auto"
+                Height="34"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Department" />
+            <ComboBox
+                x:Name="cmbDepartment"
+                Grid.Column="3"
+                Height="30"
+                Margin="0,0,0,0"
+                VerticalAlignment="Center" SelectionChanged="cmbDepartment_SelectionChanged" />
+            <Label
+                Grid.Row="1"
+                Grid.Column="2"
+                Width="Auto"
+                Height="34"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Content="Position" />
+            <ComboBox
+                x:Name="cmbPosition"
+                Grid.Row="1"
+                Grid.Column="3"
+                Height="30"
+                Margin="0,0,0,0"
+                VerticalAlignment="Center" />
+            <Button
+                x:Name="btnSearch"
+                Grid.Column="4"
+                Margin="20,5,10,5"
+                Content="Search" Click="btnSearch_Click" />
+            <Button
+                x:Name="btnClear"
+                Grid.Row="1"
+                Grid.Column="4"
+                Margin="20,5,10,5"
+                Content="Clear" Click="btnClear_Click" />
+        </Grid>
+        <Button
+            x:Name="btnAdd"
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="40,5,40,5"
+            Content="Add"
+            FontSize="18"
+            FontWeight="Bold" Click="btnAdd_Click" />
+        <Button
+            x:Name="btnUpdate"
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="40,5,40,5"
+            Content="Update"
+            FontSize="18"
+            FontWeight="Bold" />
+        <Button
+            x:Name="btnDelete"
+            Grid.Row="2"
+            Grid.Column="3"
+            Margin="40,5,40,5"
+            Content="Delete"
+            FontSize="18"
+            FontWeight="Bold" />
+    </Grid>
+</UserControl>
