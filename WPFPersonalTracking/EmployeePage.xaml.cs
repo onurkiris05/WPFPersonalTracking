@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
+using WPFPersonalTracking.ViewModels;
 
 namespace WPFPersonalTracking
 {
@@ -23,9 +24,10 @@ namespace WPFPersonalTracking
     /// </summary>
     public partial class EmployeePage : Window
     {
+        public EmployeeDetailModel Model { get; set; }
         PersonaltrackingContext _db = new();
         List<Position> _positions = new();
-        OpenFileDialog _dialog = new OpenFileDialog();
+        OpenFileDialog _dialog = new();
 
         public EmployeePage()
         {
@@ -38,6 +40,25 @@ namespace WPFPersonalTracking
             _positions = _db.Positions.ToList();
             FillPositionCombobox(_positions);
             FillDepartmentCombobox(_db.Departments.ToList());
+
+            if (IsModelExist())
+            {
+                cmbDepartment.SelectedValue = GetDepartmentValue(Model.DepartmentId);
+                cmbPosition.SelectedValue = GetPositionValue(Model.PositionId);
+                txtUserNo.Text = Model.UserNo.ToString();
+                txtPassword.Text = Model.Password.ToString();
+                txtName.Text = Model.Name.ToString();
+                txtSurname.Text = Model.Surname.ToString();
+                txtSalary.Text = Model.Salary.ToString();
+                txtAdress.AppendText(Model.Adress.ToString());
+                picker1.SelectedDate = Model.Birthday;
+                chisAdmin.IsChecked = Model.IsAdmin;
+                var image = new BitmapImage();
+                image.BeginInit();
+                image.UriSource = new Uri(@"Images/" + Model.ImagePath, UriKind.RelativeOrAbsolute);
+                image.EndInit();
+                EmployeeImage.Source = image;
+            }
         }
 
         private void cmbDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -49,6 +70,11 @@ namespace WPFPersonalTracking
                 //cmbPosition.SelectedValuePath = "Id";
                 cmbPosition.SelectedIndex = -1;
             }
+        }
+
+        private void txtUserNo_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = new Regex("[^0-9]+").IsMatch(e.Text);
         }
 
         private void btnChoose_Click(object sender, RoutedEventArgs e)
@@ -64,18 +90,49 @@ namespace WPFPersonalTracking
             }
         }
 
-        private void txtUserNo_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = new Regex("[^0-9]+").IsMatch(e.Text);
-        }
-
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidateFields()) return;
+            if (!AreFieldsValid()) return;
 
-            var employee = CreateEmployeeFromFields();
-            SaveEmployeeToDatabase(employee);
-            ClearAllFields();
+            if (IsModelExist())
+            {
+                // Update model
+                Employee employee = _db.Employees.Find(Model.Id);
+                if (txtImage.Text.Trim() != "")
+                {
+                    //Delete old image if exist
+                    if (File.Exists(@"Images//" + employee.ImagePath))
+                    {
+                        File.Delete(@"Images//" + employee.ImagePath);
+                        var fileName = "";
+                        var unique = Guid.NewGuid().ToString();
+                        fileName += unique + System.IO.Path.GetFileName(txtImage.Text);
+                        File.Copy(txtImage.Text, @"Images//" + fileName);
+                        employee.ImagePath = fileName;
+                    }
+                }
+                employee.UserNo = Convert.ToInt32(txtUserNo.Text);
+                employee.Password = txtPassword.Text;
+                employee.IsAdmin = chisAdmin.IsChecked;
+                var adress = new TextRange(txtAdress.Document.ContentStart, txtAdress.Document.ContentEnd);
+                employee.Adress = adress.Text;
+                employee.Birthday = picker1.SelectedDate;
+                employee.DepartmentId = GetDepartmentId();
+                employee.PositionId = GetPositionId();
+                employee.Name = txtName.Text;
+                employee.Surname = txtSurname.Text;
+                employee.Salary = Convert.ToInt32(txtSalary.Text);
+                _db.SaveChanges();
+                MessageBox.Show("Employee was updated!");
+            }
+            else
+            {
+                // Create model
+                var employee = CreateEmployeeFromFields();
+                SaveEmployeeToDatabase(employee);
+                ClearAllFields();
+            }
+
         }
 
         private void btnCheck_Click(object sender, RoutedEventArgs e)
@@ -84,6 +141,11 @@ namespace WPFPersonalTracking
                 MessageBox.Show("UserNo is already in use!");
             else
                 MessageBox.Show("UserNo is available!");
+        }
+
+        private void btnClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
         #endregion
 
@@ -103,23 +165,6 @@ namespace WPFPersonalTracking
             cmbDepartment.DisplayMemberPath = "DepartmentName";
             cmbDepartment.SelectedValue = "Id";
             cmbDepartment.SelectedIndex = -1;
-        }
-
-        private bool ValidateFields()
-        {
-            if (IsAnyFieldEmpty())
-            {
-                MessageBox.Show("Please fill all the necessary areas!");
-                return false;
-            }
-
-            if (IsUserNoInUse())
-            {
-                MessageBox.Show("UserNo is already in use!");
-                return false;
-            }
-
-            return true;
         }
 
         private bool IsUserNoInUse()
@@ -188,6 +233,23 @@ namespace WPFPersonalTracking
             EmployeeImage.Source = new BitmapImage();
         }
 
+        private bool AreFieldsValid()
+        {
+            if (IsAnyFieldEmpty())
+            {
+                MessageBox.Show("Please fill all the necessary areas!");
+                return false;
+            }
+
+            if (IsUserNoInUse())
+            {
+                MessageBox.Show("UserNo is already in use!");
+                return false;
+            }
+
+            return true;
+        }
+
         private string GenerateImagePath()
         {
             var unique = Guid.NewGuid().ToString();
@@ -204,6 +266,21 @@ namespace WPFPersonalTracking
         {
             var selected = (Position)cmbPosition.SelectedItem;
             return selected.Id;
+        }
+
+        private bool IsModelExist()
+        {
+            return Model != null && Model.Id != 0;
+        }
+
+        private object GetDepartmentValue(int departmentId)
+        {
+            return _db.Departments.FirstOrDefault(d => d.Id == departmentId);
+        }
+
+        private object GetPositionValue(int positionId)
+        {
+            return _db.Positions.FirstOrDefault(d => d.Id == positionId);
         }
         #endregion
     }

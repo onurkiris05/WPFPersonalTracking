@@ -13,9 +13,9 @@ public partial class Task
 
     public string? TaskContent { get; set; }
 
-    public DateOnly? TaskStartDate { get; set; }
+    public DateTime TaskStartDate { get; set; }
 
-    public DateOnly? TaskDeliveryDate { get; set; }
+    public DateTime TaskDeliveryDate { get; set; }
 
     public int TaskState { get; set; }
 

@@ -9,7 +9,8 @@
     d:DesignWidth="800"
     FontSize="18"
     FontWeight="Bold"
-    mc:Ignorable="d" Loaded="UserControl_Loaded">
+    Loaded="UserControl_Loaded"
+    mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*" />
@@ -90,6 +91,11 @@
                     Binding="{Binding Password}"
                     Header="Password"
                     Visibility="Hidden" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding ImagePath}"
+                    Header="ImagePath"
+                    Visibility="Hidden" />
             </DataGrid.Columns>
         </DataGrid>
         <Grid Grid.ColumnSpan="5">
@@ -157,7 +163,8 @@
                 Grid.Column="3"
                 Height="30"
                 Margin="0,0,0,0"
-                VerticalAlignment="Center" SelectionChanged="cmbDepartment_SelectionChanged" />
+                VerticalAlignment="Center"
+                SelectionChanged="cmbDepartment_SelectionChanged" />
             <Label
                 Grid.Row="1"
                 Grid.Column="2"
@@ -177,22 +184,25 @@
                 x:Name="btnSearch"
                 Grid.Column="4"
                 Margin="20,5,10,5"
-                Content="Search" Click="btnSearch_Click" />
+                Click="btnSearch_Click"
+                Content="Search" />
             <Button
                 x:Name="btnClear"
                 Grid.Row="1"
                 Grid.Column="4"
                 Margin="20,5,10,5"
-                Content="Clear" Click="btnClear_Click" />
+                Click="btnClear_Click"
+                Content="Clear" />
         </Grid>
         <Button
             x:Name="btnAdd"
             Grid.Row="2"
             Grid.Column="1"
             Margin="40,5,40,5"
+            Click="btnAdd_Click"
             Content="Add"
             FontSize="18"
-            FontWeight="Bold" Click="btnAdd_Click" />
+            FontWeight="Bold" />
         <Button
             x:Name="btnUpdate"
             Grid.Row="2"
@@ -200,7 +210,7 @@
             Margin="40,5,40,5"
             Content="Update"
             FontSize="18"
-            FontWeight="Bold" />
+            FontWeight="Bold" Click="btnUpdate_Click" />
         <Button
             x:Name="btnDelete"
             Grid.Row="2"

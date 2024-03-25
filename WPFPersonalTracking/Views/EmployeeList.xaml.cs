@@ -33,40 +33,10 @@ namespace WPFPersonalTracking.Views
         }
 
         #region EVENT METHODS
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            var page = new EmployeePage();
-            page.ShowDialog();
-        }
-
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             _positions = _db.Positions.ToList();
-            FillPositionCombobox(_positions);
-            FillDepartmentCombobox(_db.Departments.ToList());
-
-            // Load employees to table
-            _employeeList = _db.Employees
-                .Include(x => x.Position)
-                .Include(x => x.Department)
-                .Select(x => new EmployeeDetailModel
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Adress = x.Adress,
-                    Birthday = (DateTime)x.Birthday,
-                    DepartmentId = x.DepartmentId,
-                    DepartmentName = x.Department.DepartmentName,
-                    IsAdmin = x.IsAdmin,
-                    Password = x.Password,
-                    PositionId = x.PositionId,
-                    PositionName = x.Position.PositionName,
-                    Salary = x.Salary,
-                    Surname = x.Surname,
-                    UserNo = x.UserNo,
-                }).ToList();
-
-            gridEmployee.ItemsSource = _employeeList;
+            FillDataGrid();
         }
 
         private void cmbDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -78,6 +48,13 @@ namespace WPFPersonalTracking.Views
                 //cmbPosition.SelectedValuePath = "Id";
                 cmbPosition.SelectedIndex = -1;
             }
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new EmployeePage();
+            page.ShowDialog();
+            FillDataGrid();
         }
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
@@ -110,9 +87,47 @@ namespace WPFPersonalTracking.Views
             cmbPosition.ItemsSource = _positions;
             gridEmployee.ItemsSource = _employeeList;
         }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            var model = (EmployeeDetailModel)gridEmployee.SelectedItem;
+            var page = new EmployeePage();
+            page.Model = model;
+            page.ShowDialog();
+            FillDataGrid();
+        }
         #endregion
 
         #region SIDE METHODS
+        private void FillDataGrid()
+        {
+            FillPositionCombobox(_db.Positions.ToList());
+            FillDepartmentCombobox(_db.Departments.ToList());
+
+            _employeeList = _db.Employees
+                .Include(x => x.Position)
+                .Include(x => x.Department)
+                .Select(x => new EmployeeDetailModel
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Adress = x.Adress,
+                    Birthday = (DateTime)x.Birthday,
+                    DepartmentId = x.DepartmentId,
+                    DepartmentName = x.Department.DepartmentName,
+                    IsAdmin = x.IsAdmin,
+                    Password = x.Password,
+                    PositionId = x.PositionId,
+                    PositionName = x.Position.PositionName,
+                    Salary = x.Salary,
+                    Surname = x.Surname,
+                    UserNo = x.UserNo,
+                    ImagePath = x.ImagePath
+                }).ToList();
+
+            gridEmployee.ItemsSource = _employeeList;
+        }
+
         private void FillPositionCombobox(List<Position> positionList)
         {
             cmbPosition.ItemsSource = positionList;
@@ -140,6 +155,7 @@ namespace WPFPersonalTracking.Views
             var selected = (Position)cmbPosition.SelectedItem;
             return selected.Id;
         }
+
 
         #endregion
 
