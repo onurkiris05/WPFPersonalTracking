@@ -1,0 +1,40 @@
+﻿<Window x:Class="WPFPersonalTracking.PermissionPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:WPFPersonalTracking" mc:Ignorable="d" Title="Permission Page" Height="450" Width="450" Background="#FF8BCFDC" FontSize="18" FontWeight="Bold" Icon="/Logo.png" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Label Content="User No" Height="34" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <TextBox x:Name="txtUserNo" IsEnabled="False" Grid.Column="1" Height="26" Margin="0,0,30,0" />
+        <Label Content="Start Date" Grid.Row="1" Height="34" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <DatePicker Name="dpStart" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <Label Content="End Date" Grid.Row="2" Height="34" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <DatePicker Name="dpEnd" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <Label Content="Day Amount" Grid.Row="3" Height="34" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <TextBox x:Name="txtDayAmount" IsEnabled="False" Grid.Row="3" Grid.Column="1" Height="26" Margin="0,0,30,0" />
+        <Label Content="Explanation" Grid.Row="4" Height="34" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <TextBox x:Name="txtExplanation" IsEnabled="False" Grid.Row="4" Grid.RowSpan="2" Grid.Column="1" Margin="0,0,30,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+
+        <Grid Grid.Row="7" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="btnSave" Width="140" Margin="0,0,0,0" HorizontalAlignment="Right" Content="Save" />
+            <Button x:Name="btnClose" Grid.Column="1" Width="140" Margin="0,0,0,0" HorizontalAlignment="Center" Content="Close" />
+        </Grid>
+    </Grid>
+</Window>
