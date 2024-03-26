@@ -19,7 +19,7 @@
 
         <Image Source="/Logo.png" />
         <ContentControl Grid.Row="1" Grid.RowSpan="8" Grid.Column="1" Width="Auto" Height="Auto" Content="{Binding}" />
-        <Label x:Name="lblWindowName" Grid.Column="1" Width="NaN" Height="NaN" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Windows Name" />
+        <Label x:Name="lblWindowName" Grid.Column="1" Width="NaN" Height="NaN" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Personal Tracking" />
 
         <StackPanel Grid.Row="1" Margin="0,2,0,0">
             <Button Name="btnEmployee" Grid.Row="1" Width="250" Height="60" HorizontalAlignment="Left" Click="btnEmployee_Click">
