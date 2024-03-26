@@ -12,15 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
+using WPFPersonalTracking.ViewModels;
 using Task = WPFPersonalTracking.DB.Task;
 
-namespace WPFPersonalTracking.ViewModels
+namespace WPFPersonalTracking
 {
     /// <summary>
     /// Interaction logic for TaskPage.xaml
     /// </summary>
     public partial class TaskPage : Window
     {
+        public TaskDetailModel Model = new();
         PersonaltrackingContext _db = new();
         List<Employee> _employeeList = new();
         List<Position> _positions = new();
@@ -40,6 +42,16 @@ namespace WPFPersonalTracking.ViewModels
 
             FillDepartmentCombobox(_db.Departments.ToList());
             FillPositionCombobox(_db.Positions.ToList());
+
+            if (IsModelExist())
+            {
+                // Adjust related fields according to model
+                txtUserNo.Text = Model.UserNo.ToString();
+                txtName.Text = Model.Name;
+                txtSurname.Text = Model.Surname;
+                txtTitle.Text = Model.TaskTitle;
+                txtContent.Text = Model.TaskContent;
+            }
         }
 
         private void gridEmployee_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -69,9 +81,40 @@ namespace WPFPersonalTracking.ViewModels
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (!AreFieldsValid()) return;
+            if (txtTitle.Text.Trim() == "" || txtContent.Text.Trim() == "")
+            {
+                MessageBox.Show("Please fill the necessary fields!");
+                return;
+            }
 
-            // Add task to db
+            if (IsModelExist())
+            {
+                var task = _db.Tasks.Find(Model.Id);
+                if (_employeeId != 0)
+                    task.EmployeeId = _employeeId;
+                task.TaskTitle = txtTitle.Text;
+                task.TaskContent = txtContent.Text; 
+                _db.SaveChanges();
+                MessageBox.Show("Task was updated!");
+            }
+            else
+            {
+                if (_employeeId == 0)
+                {
+                    MessageBox.Show("Please select an employee from table!");
+                    return;
+                }
+
+                AddTask();
+                ClearFields();
+            }
+
+        }
+        #endregion
+
+        #region SIDE METHODS
+        private void AddTask()
+        {
             var task = new Task();
             task.EmployeeId = _employeeId;
             task.TaskStartDate = DateTime.Now;
@@ -82,12 +125,8 @@ namespace WPFPersonalTracking.ViewModels
             _db.SaveChanges();
             MessageBox.Show("Task was added!");
             _employeeId = 0;
-            ClearFields();
         }
 
-        #endregion
-
-        #region SIDE METHODS
         private void FillPositionCombobox(List<Position> positionList)
         {
             cmbPosition.ItemsSource = positionList;
@@ -102,6 +141,11 @@ namespace WPFPersonalTracking.ViewModels
             cmbDepartment.DisplayMemberPath = "DepartmentName";
             cmbDepartment.SelectedValue = "Id";
             cmbDepartment.SelectedIndex = -1;
+        }
+
+        private bool IsModelExist()
+        {
+            return Model != null && Model.Id != 0;
         }
 
         private int GetDepartmentId()

@@ -19,17 +19,16 @@ using WPFPersonalTracking.ViewModels;
 namespace WPFPersonalTracking.Views
 {
     /// <summary>
-    /// Interaction logic for TaskList.xaml
+    /// Interaction logic for SalaryList.xaml
     /// </summary>
-    public partial class TaskList : UserControl
+    public partial class SalaryList : UserControl
     {
         PersonaltrackingContext _db = new();
+        List<SalaryDetailModel> _salaries = new();
         List<Position> _positions = new();
-        List<TaskDetailModel> _taskList = new();
-        List<TaskDetailModel> _searchList = new();
-        TaskDetailModel _model = new();
+        SalaryDetailModel _model = new();
 
-        public TaskList()
+        public SalaryList()
         {
             InitializeComponent();
         }
@@ -37,14 +36,18 @@ namespace WPFPersonalTracking.Views
         #region EVENT METHODS
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            _positions = _db.Positions.ToList();
+
             FillDataGrid();
+            FillDepartmentCombobox(_db.Departments.ToList());
+            FillPositionCombobox(_db.Positions.ToList());
+            FillMonthCombobox(_db.Salarymonths.ToList());
         }
 
         private void cmbDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cmbDepartment.SelectedIndex != -1)
             {
-                // Filter Position Combobox according to Departments
                 cmbPosition.ItemsSource = _positions.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
                 cmbPosition.DisplayMemberPath = "PositionName";
                 //cmbPosition.SelectedValuePath = "Id";
@@ -52,22 +55,16 @@ namespace WPFPersonalTracking.Views
             }
         }
 
-        private void gridTask_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            _model = (TaskDetailModel)gridTask.SelectedItem;
-        }
-
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            var page = new TaskPage();
+            var page = new SalaryPage();
             page.ShowDialog();
-
             FillDataGrid();
         }
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            var search = _searchList;
+            var search = _salaries;
 
             if (txtUserNo.Text.Trim() != "")
                 search = search.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
@@ -75,28 +72,46 @@ namespace WPFPersonalTracking.Views
                 search = search.Where(x => x.Name.Contains(txtName.Text)).ToList();
             if (txtSurname.Text.Trim() != "")
                 search = search.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
+            if (txtYear.Text.Trim() != "")
+                search = search.Where(x => x.Year == Convert.ToInt32(txtYear.Text)).ToList();
             if (cmbDepartment.SelectedIndex != -1)
                 search = search.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
             if (cmbPosition.SelectedIndex != -1)
                 search = search.Where(x => x.PositionId == GetPositionId()).ToList();
-            if (cmbState.SelectedIndex != -1)
-                search = search.Where(x => x.TaskState == GetTaskStateId()).ToList();
-            if (rbStart.IsChecked == true)
-                search = search.Where(x => x.TaskStartDate > dpStart.SelectedDate && x.TaskStartDate < dpDelivery.SelectedDate).ToList();
-            if (rbDelivery.IsChecked == true)
-                search = search.Where(x => x.TaskDeliveryDate > dpStart.SelectedDate && x.TaskDeliveryDate < dpDelivery.SelectedDate).ToList();
+            if (cmbMonth.SelectedIndex != -1)
+                search = search.Where(x => x.MonthId == GetMonthId()).ToList();
 
-            gridTask.ItemsSource = search;
+            if (txtSalary.Text.Trim() != "")
+            {
+                switch (true)
+                {
+                    case var _ when rbMore.IsChecked == true:
+                        search = search.Where(x => x.Amount > Convert.ToInt32(txtSalary.Text)).ToList();
+                        break;
+                    case var _ when rbLess.IsChecked == true:
+                        search = search.Where(x => x.Amount < Convert.ToInt32(txtSalary.Text)).ToList();
+                        break;
+                    case var _ when rbEquals.IsChecked == true:
+                        search = search.Where(x => x.Amount == Convert.ToInt32(txtSalary.Text)).ToList();
+                        break;
+                }
+            }
+            gridSalary.ItemsSource = search;
+        }
+
+        private void gridSalary_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _model = (SalaryDetailModel)gridSalary.SelectedItem;
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            ResetAllFields();
+            ClearFields();
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            var page = new TaskPage();
+            var page = new SalaryPage();
             page.Model = _model;
             page.ShowDialog();
             FillDataGrid();
@@ -105,15 +120,15 @@ namespace WPFPersonalTracking.Views
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("Are you sure to delete?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Warning)
-               == MessageBoxResult.Yes)
+                == MessageBoxResult.Yes)
             {
                 if (_model.Id == 0) return;
 
-                var taskModel = (TaskDetailModel)gridTask.SelectedItem;
-                var task = _db.Tasks.First(x => x.Id == taskModel.Id);
-                _db.Tasks.Remove(task);
+                var salaryModel = (SalaryDetailModel)gridSalary.SelectedItem;
+                var salary = _db.Salaries.Find(salaryModel.Id);
+                _db.Salaries.Remove(salary);
                 _db.SaveChanges();
-                MessageBox.Show("Task was deleted!");
+                MessageBox.Show("Salary was deleted!");
                 FillDataGrid();
             }
         }
@@ -122,31 +137,22 @@ namespace WPFPersonalTracking.Views
         #region SIDE METHODS
         private void FillDataGrid()
         {
-            _taskList = _db.Tasks.Include(x => x.TaskStateNavigation).Include(x => x.Employee)
-                .ThenInclude(x => x.Department).ThenInclude(x => x.Positions).Select(x => new TaskDetailModel()
-                {
-                    Id = x.Id,
-                    EmployeeId = (int)x.EmployeeId,
-                    Name = x.Employee.Name,
-                    StateName = x.TaskStateNavigation.StateName,
-                    Surname = x.Employee.Surname,
-                    TaskContent = x.TaskContent,
-                    TaskDeliveryDate = x.TaskDeliveryDate,
-                    TaskStartDate = (DateTime)x.TaskStartDate,
-                    TaskState = (int)x.TaskState,
-                    TaskTitle = x.TaskTitle,
-                    UserNo = x.Employee.UserNo,
-                    DepartmentId = x.Employee.DepartmentId,
-                    PositionId = x.Employee.PositionId,
-                }).ToList();
+            _salaries = _db.Salaries.Include(x => x.Employee).Include(x => x.Month).Select(x => new SalaryDetailModel()
+            {
+                UserNo = x.Employee.UserNo,
+                Name = x.Employee.Name,
+                Surname = x.Employee.Surname,
+                Amount = x.Amount,
+                EmployeeId = x.EmployeeId,
+                Id = x.Id,
+                MonthId = x.Month.Id,
+                MonthName = x.Month.MonthName,
+                Year = x.Year,
+                DepartmentId = x.Employee.DepartmentId,
+                PositionId = x.Employee.PositionId
 
-            gridTask.ItemsSource = _taskList;
-            _searchList = _taskList;
-            _positions = _db.Positions.ToList();
-
-            FillDepartmentCombobox(_db.Departments.ToList());
-            FillPositionCombobox(_db.Positions.ToList());
-            FillStateCombobox(_db.Taskstates.ToList());
+            }).OrderByDescending(x => x.Year).OrderByDescending(x => x.MonthId).ToList();
+            gridSalary.ItemsSource = _salaries;
         }
 
         private void FillPositionCombobox(List<Position> positionList)
@@ -165,28 +171,29 @@ namespace WPFPersonalTracking.Views
             cmbDepartment.SelectedIndex = -1;
         }
 
-        private void FillStateCombobox(List<Taskstate> stateList)
+        private void FillMonthCombobox(List<Salarymonth> monthList)
         {
-            cmbState.ItemsSource = stateList;
-            cmbState.DisplayMemberPath = "StateName";
-            cmbState.SelectedValue = "Id";
-            cmbState.SelectedIndex = -1;
+            cmbMonth.ItemsSource = monthList;
+            cmbMonth.DisplayMemberPath = "MonthName";
+            cmbMonth.SelectedValue = "Id";
+            cmbMonth.SelectedIndex = -1;
         }
 
-        private void ResetAllFields()
+        private void ClearFields()
         {
             txtUserNo.Clear();
             txtName.Clear();
             txtSurname.Clear();
-            dpDelivery.SelectedDate = DateTime.Today;
-            dpStart.SelectedDate = DateTime.Today;
+            txtYear.Clear();
+            txtSalary.Clear();
             cmbDepartment.SelectedIndex = -1;
+            cmbMonth.SelectedIndex = -1;
             cmbPosition.SelectedIndex = -1;
-            cmbState.SelectedIndex = -1;
             cmbPosition.ItemsSource = _positions;
-            rbDelivery.IsChecked = false;
-            rbStart.IsChecked = false;
-            gridTask.ItemsSource = _taskList;
+            rbMore.IsChecked = false;
+            rbLess.IsChecked = false;
+            rbEquals.IsChecked = false;
+            gridSalary.ItemsSource = _salaries;
         }
 
         private int GetDepartmentId()
@@ -201,9 +208,9 @@ namespace WPFPersonalTracking.Views
             return selected.Id;
         }
 
-        private int GetTaskStateId()
+        private int GetMonthId()
         {
-            var selected = (Taskstate)cmbState.SelectedItem;
+            var selected = (Salarymonth)cmbMonth.SelectedItem;
             return selected.Id;
         }
 
