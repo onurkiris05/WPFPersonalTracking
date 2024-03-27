@@ -19,13 +19,13 @@
         <Label Content="User No" Height="34" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <TextBox x:Name="txtUserNo" IsEnabled="False" Grid.Column="1" Height="26" Margin="0,0,30,0" />
         <Label Content="Start Date" Grid.Row="1" Height="34" HorizontalAlignment="Left" VerticalAlignment="Center" />
-        <DatePicker Name="dpStart" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <DatePicker Name="dpStart" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedDateChanged="dpStart_SelectedDateChanged" />
         <Label Content="End Date" Grid.Row="2" Height="34" Width="100" HorizontalAlignment="Left" VerticalAlignment="Center" />
-        <DatePicker Name="dpEnd" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <DatePicker Name="dpEnd" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" SelectedDateChanged="dpEnd_SelectedDateChanged" />
         <Label Content="Day Amount" Grid.Row="3" Height="34" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <TextBox x:Name="txtDayAmount" IsEnabled="False" Grid.Row="3" Grid.Column="1" Height="26" Margin="0,0,30,0" />
         <Label Content="Explanation" Grid.Row="4" Height="34" Width="120" HorizontalAlignment="Left" VerticalAlignment="Center" />
-        <TextBox x:Name="txtExplanation" IsEnabled="False" Grid.Row="4" Grid.RowSpan="2" Grid.Column="1" Margin="0,0,30,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <TextBox x:Name="txtExplanation" Grid.Row="4" Grid.RowSpan="2" Grid.Column="1" Margin="0,0,30,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
         <Grid Grid.Row="7" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
@@ -33,8 +33,8 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="btnSave" Width="140" Margin="0,0,0,0" HorizontalAlignment="Right" Content="Save" />
-            <Button x:Name="btnClose" Grid.Column="1" Width="140" Margin="0,0,0,0" HorizontalAlignment="Center" Content="Close" />
+            <Button x:Name="btnSave" Width="140" Margin="0,0,0,0" HorizontalAlignment="Right" Content="Save" Click="btnSave_Click" />
+            <Button x:Name="btnClose" Grid.Column="1" Width="140" Margin="0,0,0,0" HorizontalAlignment="Center" Content="Close" Click="btnClose_Click" />
         </Grid>
     </Grid>
 </Window>

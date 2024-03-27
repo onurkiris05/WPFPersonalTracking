@@ -9,15 +9,17 @@ public partial class Permission
 
     public int EmployeeId { get; set; }
 
-    public DateOnly PermissionStartDate { get; set; }
+    public int UserNo { get; set; }
 
-    public DateOnly PermissionEndDate { get; set; }
+    public DateTime? StartDate { get; set; }
+
+    public DateTime? EndDate { get; set; }
 
     public int PermissionState { get; set; }
 
-    public string? PermissionExplanation { get; set; }
+    public string? Explanation { get; set; }
 
-    public int PermissionDay { get; set; }
+    public int PermissionAmount { get; set; }
 
     public virtual Employee Employee { get; set; } = null!;
 

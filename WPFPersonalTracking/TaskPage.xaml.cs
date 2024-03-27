@@ -40,8 +40,8 @@ namespace WPFPersonalTracking
             _positions = _db.Positions.ToList();
             gridEmployee.ItemsSource = _employeeList;
 
+            FillPositionCombobox(_positions);
             FillDepartmentCombobox(_db.Departments.ToList());
-            FillPositionCombobox(_db.Positions.ToList());
 
             if (IsModelExist())
             {

@@ -15,5 +15,11 @@ namespace WPFPersonalTracking
             public static int Approved { get; set; } = 3;
         }
 
+        public static class PermissionStates
+        {
+            public static int OnEmployee { get; set; } = 1;
+            public static int Approved { get; set; } = 2;
+            public static int Disapproved { get; set; } = 3;
+        }
     }
 }

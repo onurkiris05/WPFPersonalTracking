@@ -57,5 +57,10 @@ namespace WPFPersonalTracking
             lblWindowName.Content = "Permission List";
             DataContext = new PermissionViewModel();
         }
+
+        private void btnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

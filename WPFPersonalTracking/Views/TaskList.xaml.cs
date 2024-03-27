@@ -99,6 +99,7 @@ namespace WPFPersonalTracking.Views
             var page = new TaskPage();
             page.Model = _model;
             page.ShowDialog();
+
             FillDataGrid();
         }
 
