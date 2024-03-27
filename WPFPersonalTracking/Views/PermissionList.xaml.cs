@@ -163,6 +163,21 @@ namespace WPFPersonalTracking.Views
                     DepartmentId = x.Employee.DepartmentId,
                     PositionId = x.Employee.PositionId
                 }).OrderByDescending(x => x.StartDate).ToList();
+
+            if (!UserStatic.IsAdmin)
+            {
+                _permissions = _permissions.Where(x => x.EmployeeId == UserStatic.EmployeeId).ToList();
+                txtUserNo.IsEnabled = false;
+                txtName.IsEnabled = false;
+                txtSurname.IsEnabled = false;
+                cmbDepartment.IsEnabled = false;
+                cmbPosition.IsEnabled = false;
+                btnDelete.Visibility = Visibility.Hidden;
+                btnApprove.Visibility = Visibility.Hidden;
+                btnDisapprove.Visibility = Visibility.Hidden;
+                btnAdd.SetValue(Grid.ColumnProperty, 1);
+            }
+
             gridPermission.ItemsSource = _permissions;
         }
 

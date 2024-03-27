@@ -152,6 +152,20 @@ namespace WPFPersonalTracking.Views
                 PositionId = x.Employee.PositionId
 
             }).OrderByDescending(x => x.Year).OrderByDescending(x => x.MonthId).ToList();
+
+            if (!UserStatic.IsAdmin)
+            {
+                _salaries = _salaries.Where(x => x.EmployeeId == UserStatic.EmployeeId).ToList();
+                txtUserNo.IsEnabled = false;
+                txtName.IsEnabled = false;
+                txtSurname.IsEnabled = false;
+                cmbDepartment.IsEnabled = false;
+                cmbPosition.IsEnabled = false;
+                btnAdd.Visibility = Visibility.Hidden;
+                btnDelete.Visibility = Visibility.Hidden;
+                btnUpdate.Visibility = Visibility.Hidden;
+            }
+
             gridSalary.ItemsSource = _salaries;
         }
 

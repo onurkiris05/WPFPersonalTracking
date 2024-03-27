@@ -57,9 +57,12 @@ namespace WPFPersonalTracking
                 UserStatic.UserNo = employee.UserNo;
                 main.ShowDialog();
 
-                txtPassword.Clear();
-                txtUserNo.Clear();
-                Visibility = Visibility.Visible;
+                if (!MainWindow.IsClosing)
+                {
+                    txtPassword.Clear();
+                    txtUserNo.Clear();
+                    Visibility = Visibility.Visible;
+                }
             }
             else
                 MessageBox.Show("Please make sure your password and user no are correct!");

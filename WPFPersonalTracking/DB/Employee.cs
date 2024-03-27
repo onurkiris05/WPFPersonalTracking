@@ -27,7 +27,7 @@ public partial class Employee
 
     public string? Password { get; set; }
 
-    public bool? IsAdmin { get; set; }
+    public bool IsAdmin { get; set; }
 
     public virtual Department Department { get; set; } = null!;
 

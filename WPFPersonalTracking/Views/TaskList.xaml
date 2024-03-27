@@ -82,7 +82,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnApprove" Content="Approve" FontSize="18" FontWeight="Bold" Margin="40,5,40,5"/>
+            <Button x:Name="btnApprove" Content="Approve" FontSize="18" FontWeight="Bold" Margin="40,5,40,5" Click="btnApprove_Click" />
             <Button x:Name="btnAdd" Content="Add" Grid.Column="1" FontSize="18" FontWeight="Bold" Margin="40,5,40,5" Click="btnAdd_Click" />
             <Button x:Name="btnUpdate" Content="Update" Grid.Column="2" FontSize="18" FontWeight="Bold" Margin="40,5,40,5" Click="btnUpdate_Click" />
             <Button x:Name="btnDelete" Content="Delete" Grid.Column="3" FontSize="18" FontWeight="Bold" Margin="40,5,40,5" Click="btnDelete_Click" />

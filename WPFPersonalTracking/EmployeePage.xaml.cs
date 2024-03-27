@@ -59,6 +59,15 @@ namespace WPFPersonalTracking
                 image.EndInit();
                 EmployeeImage.Source = image;
             }
+
+            if (!UserStatic.IsAdmin)
+            {
+                chisAdmin.IsEnabled = false;
+                txtUserNo.IsEnabled = false;
+                txtSalary.IsEnabled = false;
+                cmbDepartment.IsEnabled = false;
+                cmbPosition.IsEnabled = false;
+            }
         }
 
         private void cmbDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -113,7 +122,7 @@ namespace WPFPersonalTracking
                 }
                 employee.UserNo = Convert.ToInt32(txtUserNo.Text);
                 employee.Password = txtPassword.Text;
-                employee.IsAdmin = chisAdmin.IsChecked;
+                employee.IsAdmin = (bool)chisAdmin.IsChecked;
                 var adress = new TextRange(txtAdress.Document.ContentStart, txtAdress.Document.ContentEnd);
                 employee.Adress = adress.Text;
                 employee.Birthday = picker1.SelectedDate;

@@ -38,6 +38,15 @@ namespace WPFPersonalTracking.Views
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             FillDataGrid();
+
+            if (!UserStatic.IsAdmin)
+            {
+                btnAdd.Visibility = Visibility.Hidden;
+                btnUpdate.Visibility = Visibility.Hidden;
+                btnDelete.Visibility = Visibility.Hidden;
+                btnApprove.SetValue(Grid.ColumnProperty, 1);
+                btnApprove.Content = "Delivery";
+            }
         }
 
         private void cmbDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -118,6 +127,31 @@ namespace WPFPersonalTracking.Views
                 FillDataGrid();
             }
         }
+
+        private void btnApprove_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsModelExist()) return;
+
+            if (UserStatic.IsAdmin & _model.TaskState == Definitions.TaskStates.OnEmployee)
+                MessageBox.Show("Before approve a task, Task must be delivered!");
+            else if (_model.TaskState == Definitions.TaskStates.Approved)
+                MessageBox.Show("This task is already approved!");
+            else if (!UserStatic.IsAdmin & _model.TaskState == Definitions.TaskStates.Delivered)
+                MessageBox.Show("This task is already delivered!");
+            else
+            {
+                var task = _db.Tasks.Find(_model.Id);
+                if(UserStatic.IsAdmin)
+                    task.TaskState=Definitions.TaskStates.Approved;
+                else
+                    task.TaskState=Definitions.TaskStates.Delivered;
+
+                _db.SaveChanges();
+                MessageBox.Show("Task was updated!");
+                FillDataGrid();
+            }
+
+        }
         #endregion
 
         #region SIDE METHODS
@@ -140,6 +174,16 @@ namespace WPFPersonalTracking.Views
                     DepartmentId = x.Employee.DepartmentId,
                     PositionId = x.Employee.PositionId,
                 }).ToList();
+
+            if (!UserStatic.IsAdmin)
+            {
+                _taskList = _taskList.Where(x => x.EmployeeId == UserStatic.EmployeeId).ToList();
+                txtUserNo.IsEnabled = false;
+                txtName.IsEnabled = false;
+                txtSurname.IsEnabled = false;
+                cmbDepartment.IsEnabled = false;
+                cmbPosition.IsEnabled = false;
+            }
 
             gridTask.ItemsSource = _taskList;
             _searchList = _taskList;
@@ -206,6 +250,14 @@ namespace WPFPersonalTracking.Views
         {
             var selected = (Taskstate)cmbState.SelectedItem;
             return selected.Id;
+        }
+
+        private bool IsModelExist()
+        {
+            if (_model != null && _model.Id != 0) return true;
+
+            MessageBox.Show("Please select a task from table!");
+            return false;
         }
 
         #endregion
