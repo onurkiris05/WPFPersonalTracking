@@ -21,36 +21,70 @@ namespace WPFPersonalTracking.Views
     /// </summary>
     public partial class DepartmentList : UserControl
     {
+        PersonaltrackingContext _db = new();
+        Department _model = new();
+
         public DepartmentList()
         {
             InitializeComponent();
-            FillGrid();
+            FillDataGrid();
         }
 
-        private void FillGrid()
+        #region EVENT METHODS
+        private void gridDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            using (PersonaltrackingContext db = new PersonaltrackingContext())
-            {
-                List<Department> list = db.Departments.OrderBy
-                    (x => x.DepartmentName).ToList();
-                gridDepartment.ItemsSource = list;
-            }
+            _model = (Department)gridDepartment.SelectedItem;
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
             var page = new DepartmentPage();
             page.ShowDialog();
-            FillGrid();
+            FillDataGrid();
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            var dpt = (Department)gridDepartment.SelectedItem;
+            if (!IsModelExist()) return;
+
             var page = new DepartmentPage();
-            page.Department = dpt;
+            page.Department = _model;
             page.ShowDialog();
-            FillGrid();
+            FillDataGrid();
         }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsModelExist()) return;
+
+            if (MessageBox.Show("Are you sure to delete?", "Question",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) ==
+                MessageBoxResult.Yes)
+            {
+                var department = _db.Departments.Find(_model.Id);
+                _db.Departments.Remove(department);
+                _db.SaveChanges();
+                MessageBox.Show("Department was deleted!");
+                FillDataGrid();
+            }
+        } 
+        #endregion
+
+        #region SIDE METHODS
+        private void FillDataGrid()
+        {
+            List<Department> list = _db.Departments.OrderBy(x => x.DepartmentName).ToList();
+            gridDepartment.ItemsSource = list;
+        }
+
+        private bool IsModelExist()
+        {
+            if (_model != null && _model.Id != 0) return true;
+
+            MessageBox.Show("Please select a department from table!");
+            return false;
+        } 
+        #endregion
     }
 }

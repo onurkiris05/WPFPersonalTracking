@@ -23,15 +23,64 @@ namespace WPFPersonalTracking.Views
     /// </summary>
     public partial class PositionList : UserControl
     {
+        PersonaltrackingContext _db = new();
+        PositionModel _model = new();
+
         public PositionList()
         {
             InitializeComponent();
         }
 
-        private void FillGrid()
+        #region EVENT METHODS
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            var db = new PersonaltrackingContext();
-            var list = db.Positions.Include(x => x.Department).Select(a => new
+            FillDataGrid();
+        }
+
+        private void gridPosition_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _model = (PositionModel)gridPosition.SelectedItem;
+        }
+
+        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new PositionPage();
+            page.ShowDialog();
+            FillDataGrid();
+        }
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsModelExist()) return;
+
+            var page = new PositionPage();
+            page.Model = _model;
+            page.ShowDialog();
+            FillDataGrid();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsModelExist()) return;
+
+            if (MessageBox.Show("Are you sure to delete?", "Question",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) ==
+                MessageBoxResult.Yes)
+            {
+                var position = _db.Positions.Find(_model.Id);
+                _db.Positions.Remove(position);
+                _db.SaveChanges();
+                MessageBox.Show("Position was deleted!");
+                FillDataGrid();
+            }
+        }
+        #endregion
+
+        #region SIDE METHODS
+        private void FillDataGrid()
+        {
+            var list = _db.Positions.Include(x => x.Department).Select(a => new
             {
                 positionId = a.Id,
                 positionName = a.PositionName,
@@ -53,28 +102,13 @@ namespace WPFPersonalTracking.Views
             gridPosition.ItemsSource = modellist;
         }
 
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        private bool IsModelExist()
         {
-            FillGrid();
-        }
+            if (_model != null && _model.Id != 0) return true;
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            var page = new PositionPage();
-            page.ShowDialog();
-            FillGrid();
+            MessageBox.Show("Please select a position from table!");
+            return false;
         }
-
-        private void btnUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            var model = (PositionModel)gridPosition.SelectedItem;
-            if (model != null && model.Id != 0)
-            {
-                var page = new PositionPage();
-                page.Model = model;
-                page.ShowDialog();
-                FillGrid();
-            }
-        }
+        #endregion
     }
 }

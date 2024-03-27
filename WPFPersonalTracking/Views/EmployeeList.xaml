@@ -30,7 +30,7 @@
             Grid.ColumnSpan="5"
             AutoGenerateColumns="False"
             IsReadOnly="True"
-            SelectionMode="Single">
+            SelectionMode="Single" SelectionChanged="gridEmployee_SelectionChanged">
             <DataGrid.Columns>
                 <DataGridTextColumn
                     Width="*"
@@ -218,6 +218,6 @@
             Margin="40,5,40,5"
             Content="Delete"
             FontSize="18"
-            FontWeight="Bold" />
+            FontWeight="Bold" Click="btnDelete_Click" />
     </Grid>
 </UserControl>

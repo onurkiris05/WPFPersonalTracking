@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
 using WPFPersonalTracking.ViewModels;
+using Task = WPFPersonalTracking.DB.Task;
 
 namespace WPFPersonalTracking.Views
 {
@@ -26,6 +27,7 @@ namespace WPFPersonalTracking.Views
         PersonaltrackingContext _db = new();
         List<Position> _positions = new();
         List<EmployeeDetailModel> _employeeList = new();
+        EmployeeDetailModel _model = new();
 
         public EmployeeList()
         {
@@ -37,6 +39,11 @@ namespace WPFPersonalTracking.Views
         {
             _positions = _db.Positions.ToList();
             FillDataGrid();
+        }
+
+        private void gridEmployee_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _model = (EmployeeDetailModel)gridEmployee.SelectedItem;
         }
 
         private void cmbDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -90,11 +97,29 @@ namespace WPFPersonalTracking.Views
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            var model = (EmployeeDetailModel)gridEmployee.SelectedItem;
+            if (!IsModelExist()) return;
+
             var page = new EmployeePage();
-            page.Model = model;
+            page.Model = _model;
             page.ShowDialog();
             FillDataGrid();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsModelExist()) return;
+
+            if (MessageBox.Show("Are you sure to delete?", "Question",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) ==
+                MessageBoxResult.Yes)
+            {
+                var employee = _db.Employees.Find(_model.Id);
+                _db.Employees.Remove(employee);
+                _db.SaveChanges();
+                MessageBox.Show("Employee was deleted!");
+                FillDataGrid();
+            }
         }
         #endregion
 
@@ -156,9 +181,13 @@ namespace WPFPersonalTracking.Views
             return selected.Id;
         }
 
+        private bool IsModelExist()
+        {
+            if (_model != null && _model.Id != 0) return true;
 
+            MessageBox.Show("Please select an employee from table!");
+            return false;
+        }
         #endregion
-
-
     }
 }

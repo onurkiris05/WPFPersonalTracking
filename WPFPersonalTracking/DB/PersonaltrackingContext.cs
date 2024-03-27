@@ -39,6 +39,9 @@ public partial class PersonaltrackingContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Employee>().ToTable(tb => tb.HasTrigger("TriggerName"));
+        modelBuilder.Entity<Position>().ToTable(tb => tb.HasTrigger("TriggerName"));
+        modelBuilder.Entity<Department>().ToTable(tb => tb.HasTrigger("TriggerName"));
         modelBuilder.Entity<Department>(entity =>
         {
             entity.ToTable("DEPARTMENT");
