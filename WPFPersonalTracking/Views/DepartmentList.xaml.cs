@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
+using WPFPersonalTracking.Pages;
 
 namespace WPFPersonalTracking.Views
 {
@@ -27,10 +28,14 @@ namespace WPFPersonalTracking.Views
         public DepartmentList()
         {
             InitializeComponent();
-            FillDataGrid();
         }
 
         #region EVENT METHODS
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            FillDataGrid();
+        }
+
         private void gridDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             _model = (Department)gridDepartment.SelectedItem;
@@ -68,7 +73,7 @@ namespace WPFPersonalTracking.Views
                 MessageBox.Show("Department was deleted!");
                 FillDataGrid();
             }
-        } 
+        }
         #endregion
 
         #region SIDE METHODS
@@ -84,7 +89,7 @@ namespace WPFPersonalTracking.Views
 
             MessageBox.Show("Please select a department from table!");
             return false;
-        } 
+        }
         #endregion
     }
 }

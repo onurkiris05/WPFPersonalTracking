@@ -14,7 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
+using WPFPersonalTracking.Pages;
+using WPFPersonalTracking.Statics;
 
 namespace WPFPersonalTracking.Views
 {
@@ -60,28 +62,7 @@ namespace WPFPersonalTracking.Views
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            var search = _permissions;
-
-            if (txtUserNo.Text.Trim() != "")
-                search = search.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
-            if (txtName.Text.Trim() != "")
-                search = search.Where(x => x.Name.Contains(txtName.Text)).ToList();
-            if (txtSurname.Text.Trim() != "")
-                search = search.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
-            if (cmbDepartment.SelectedIndex != -1)
-                search = search.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
-            if (cmbPosition.SelectedIndex != -1)
-                search = search.Where(x => x.PositionId == GetPositionId()).ToList();
-            if (cmbState.SelectedIndex != -1)
-                search = search.Where(x => x.PermissionState == GetStateId()).ToList();
-            if (rbStartDate.IsChecked == true)
-                search = search.Where(x => x.StartDate > dpStart.SelectedDate && x.StartDate < dpEnd.SelectedDate).ToList();
-            if (rbEndDate.IsChecked == true)
-                search = search.Where(x => x.EndDate > dpStart.SelectedDate && x.EndDate < dpEnd.SelectedDate).ToList();
-            if (txtDayAmount.Text.Trim() != "")
-                search = search.Where(x => x.DayAmount == Convert.ToInt32(txtDayAmount.Text)).ToList();
-
-            gridPermission.ItemsSource = search;
+            gridPermission.ItemsSource = FilterByFields();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -203,6 +184,31 @@ namespace WPFPersonalTracking.Views
             cmbState.DisplayMemberPath = "PermissionState";
             cmbState.SelectedValue = "Id";
             cmbState.SelectedIndex = -1;
+        }
+
+        private List<PermissionDetailModel> FilterByFields()
+        {
+            var search = _permissions;
+
+            if (txtUserNo.Text.Trim() != "")
+                search = search.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
+            if (txtName.Text.Trim() != "")
+                search = search.Where(x => x.Name.Contains(txtName.Text)).ToList();
+            if (txtSurname.Text.Trim() != "")
+                search = search.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
+            if (cmbDepartment.SelectedIndex != -1)
+                search = search.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
+            if (cmbPosition.SelectedIndex != -1)
+                search = search.Where(x => x.PositionId == GetPositionId()).ToList();
+            if (cmbState.SelectedIndex != -1)
+                search = search.Where(x => x.PermissionState == GetStateId()).ToList();
+            if (rbStartDate.IsChecked == true)
+                search = search.Where(x => x.StartDate > dpStart.SelectedDate && x.StartDate < dpEnd.SelectedDate).ToList();
+            if (rbEndDate.IsChecked == true)
+                search = search.Where(x => x.EndDate > dpStart.SelectedDate && x.EndDate < dpEnd.SelectedDate).ToList();
+            if (txtDayAmount.Text.Trim() != "")
+                search = search.Where(x => x.DayAmount == Convert.ToInt32(txtDayAmount.Text)).ToList();
+            return search;
         }
 
         private int GetDepartmentId()

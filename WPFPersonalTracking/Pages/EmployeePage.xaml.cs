@@ -15,9 +15,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
+using WPFPersonalTracking.Statics;
 
-namespace WPFPersonalTracking
+namespace WPFPersonalTracking.Pages
 {
     /// <summary>
     /// Interaction logic for EmployeePage.xaml
@@ -41,24 +42,7 @@ namespace WPFPersonalTracking
             FillPositionCombobox(_positions);
             FillDepartmentCombobox(_db.Departments.ToList());
 
-            if (IsModelExist())
-            {
-                cmbDepartment.SelectedValue = GetDepartmentValue(Model.DepartmentId);
-                cmbPosition.SelectedValue = GetPositionValue(Model.PositionId);
-                txtUserNo.Text = Model.UserNo.ToString();
-                txtPassword.Text = Model.Password.ToString();
-                txtName.Text = Model.Name.ToString();
-                txtSurname.Text = Model.Surname.ToString();
-                txtSalary.Text = Model.Salary.ToString();
-                txtAdress.AppendText(Model.Adress.ToString());
-                picker1.SelectedDate = Model.Birthday;
-                chisAdmin.IsChecked = Model.IsAdmin;
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.UriSource = new Uri(@"Images/" + Model.ImagePath, UriKind.RelativeOrAbsolute);
-                image.EndInit();
-                EmployeeImage.Source = image;
-            }
+            if (IsModelExist()) UpdatePage();
 
             if (!UserStatic.IsAdmin)
             {
@@ -105,43 +89,14 @@ namespace WPFPersonalTracking
 
             if (IsModelExist())
             {
-                // Update model
-                Employee employee = _db.Employees.Find(Model.Id);
-                if (txtImage.Text.Trim() != "")
-                {
-                    //Delete old image if exist
-                    if (File.Exists(@"Images//" + employee.ImagePath))
-                    {
-                        File.Delete(@"Images//" + employee.ImagePath);
-                        var fileName = "";
-                        var unique = Guid.NewGuid().ToString();
-                        fileName += unique + System.IO.Path.GetFileName(txtImage.Text);
-                        File.Copy(txtImage.Text, @"Images//" + fileName);
-                        employee.ImagePath = fileName;
-                    }
-                }
-                employee.UserNo = Convert.ToInt32(txtUserNo.Text);
-                employee.Password = txtPassword.Text;
-                employee.IsAdmin = (bool)chisAdmin.IsChecked;
-                var adress = new TextRange(txtAdress.Document.ContentStart, txtAdress.Document.ContentEnd);
-                employee.Adress = adress.Text;
-                employee.Birthday = picker1.SelectedDate;
-                employee.DepartmentId = GetDepartmentId();
-                employee.PositionId = GetPositionId();
-                employee.Name = txtName.Text;
-                employee.Surname = txtSurname.Text;
-                employee.Salary = Convert.ToInt32(txtSalary.Text);
-                _db.SaveChanges();
-                MessageBox.Show("Employee was updated!");
+                UpdateEmployee();
             }
             else
             {
-                // Create model
                 var employee = CreateEmployeeFromFields();
                 SaveEmployeeToDatabase(employee);
                 ClearAllFields();
             }
-
         }
 
         private void btnCheck_Click(object sender, RoutedEventArgs e)
@@ -159,6 +114,55 @@ namespace WPFPersonalTracking
         #endregion
 
         #region SIDE METHODS
+        private void UpdatePage()
+        {
+            cmbDepartment.SelectedValue = GetDepartmentValue(Model.DepartmentId);
+            cmbPosition.SelectedValue = GetPositionValue(Model.PositionId);
+            txtUserNo.Text = Model.UserNo.ToString();
+            txtPassword.Text = Model.Password.ToString();
+            txtName.Text = Model.Name.ToString();
+            txtSurname.Text = Model.Surname.ToString();
+            txtSalary.Text = Model.Salary.ToString();
+            txtAdress.AppendText(Model.Adress.ToString());
+            picker1.SelectedDate = Model.Birthday;
+            chisAdmin.IsChecked = Model.IsAdmin;
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = new Uri(@"Images/" + Model.ImagePath, UriKind.RelativeOrAbsolute);
+            image.EndInit();
+            EmployeeImage.Source = image;
+        }
+
+        private void UpdateEmployee()
+        {
+            Employee employee = _db.Employees.Find(Model.Id);
+            if (txtImage.Text.Trim() != "")
+            {
+                //Delete old image if exist
+                if (File.Exists(@"Images//" + employee.ImagePath))
+                {
+                    File.Delete(@"Images//" + employee.ImagePath);
+                    var fileName = "";
+                    var unique = Guid.NewGuid().ToString();
+                    fileName += unique + System.IO.Path.GetFileName(txtImage.Text);
+                    File.Copy(txtImage.Text, @"Images//" + fileName);
+                    employee.ImagePath = fileName;
+                }
+            }
+            employee.UserNo = Convert.ToInt32(txtUserNo.Text);
+            employee.Password = txtPassword.Text;
+            employee.IsAdmin = (bool)chisAdmin.IsChecked;
+            var adress = new TextRange(txtAdress.Document.ContentStart, txtAdress.Document.ContentEnd);
+            employee.Adress = adress.Text;
+            employee.Birthday = picker1.SelectedDate;
+            employee.DepartmentId = GetDepartmentId();
+            employee.PositionId = GetPositionId();
+            employee.Name = txtName.Text;
+            employee.Surname = txtSurname.Text;
+            employee.Salary = Convert.ToInt32(txtSalary.Text);
+            _db.SaveChanges();
+            MessageBox.Show("Employee was updated!");
+        }
 
         private void FillPositionCombobox(List<Position> positionList)
         {

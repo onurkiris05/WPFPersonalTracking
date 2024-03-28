@@ -12,9 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
 
-namespace WPFPersonalTracking
+namespace WPFPersonalTracking.Pages
 {
     /// <summary>
     /// Interaction logic for SalaryPage.xaml
@@ -44,15 +44,7 @@ namespace WPFPersonalTracking
             FillMonthCombobox(_db.Salarymonths.ToList());
 
             if (IsModelExist())
-            {
-                txtName.Text = Model.Name;
-                txtSurname.Text = Model.Surname;
-                txtSalary.Text = Model.Amount.ToString();
-                txtUserNo.Text = Model.UserNo.ToString();
-                txtYear.Text = Model.Year.ToString();
-                _employeeId = Model.EmployeeId;
-                cmbMonth.SelectedValue = Model.MonthId;
-            }
+                UpdatePage();
         }
 
         private void gridEmployee_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -85,29 +77,11 @@ namespace WPFPersonalTracking
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (txtSalary.Text.Trim() == "" || txtYear.Text.Trim() == "" || cmbMonth.SelectedIndex == -1)
-            {
-                MessageBox.Show("Please fill the necessary areas!");
-                return;
-            }
+            if(!AreFieldsValid()) return;
 
             if (IsModelExist())
             {
-                var salary = _db.Salaries.Find(Model.Id);
-                var oldSalary = salary.Amount;
-                salary.Amount = Convert.ToInt32(txtSalary.Text);
-                salary.Month = (Salarymonth)cmbMonth.SelectedValue;
-                salary.Year = Convert.ToInt32(txtYear.Text);
-                salary.EmployeeId = _employeeId;
-                _db.SaveChanges();
-
-                if (oldSalary < salary.Amount)
-                {
-                    var employee = _db.Employees.Find(_employeeId);
-                    employee.Salary = salary.Amount;
-                    _db.SaveChanges();
-                }
-                MessageBox.Show("Salary was updated!");
+                UpdateSalary();
             }
             else
             {
@@ -153,6 +127,46 @@ namespace WPFPersonalTracking
             cmbMonth.SelectedIndex = -1;
         }
 
+        private void UpdatePage()
+        {
+            txtName.Text = Model.Name;
+            txtSurname.Text = Model.Surname;
+            txtSalary.Text = Model.Amount.ToString();
+            txtUserNo.Text = Model.UserNo.ToString();
+            txtYear.Text = Model.Year.ToString();
+            _employeeId = Model.EmployeeId;
+            cmbMonth.SelectedValue = Model.MonthId;
+        }
+
+        private bool AreFieldsValid()
+        {
+            if (txtSalary.Text.Trim() == "" || txtYear.Text.Trim() == "" || cmbMonth.SelectedIndex == -1)
+            {
+                MessageBox.Show("Please fill the necessary areas!");
+                return false;
+            }
+            return true;
+        }
+
+        private void UpdateSalary()
+        {
+            var salary = _db.Salaries.Find(Model.Id);
+            var oldSalary = salary.Amount;
+            salary.Amount = Convert.ToInt32(txtSalary.Text);
+            salary.Month = (Salarymonth)cmbMonth.SelectedValue;
+            salary.Year = Convert.ToInt32(txtYear.Text);
+            salary.EmployeeId = _employeeId;
+            _db.SaveChanges();
+
+            if (oldSalary < salary.Amount)
+            {
+                var employee = _db.Employees.Find(_employeeId);
+                employee.Salary = salary.Amount;
+                _db.SaveChanges();
+            }
+            MessageBox.Show("Salary was updated!");
+        }
+
         private int GetDepartmentId()
         {
             var selected = (Department)cmbDepartment.SelectedItem;
@@ -165,10 +179,7 @@ namespace WPFPersonalTracking
             return selected.Id;
         }
 
-        private bool IsModelExist()
-        {
-            return Model != null && Model.Id != 0;
-        }
+        private bool IsModelExist() => Model != null && Model.Id != 0;
 
         private void AddSalary()
         {
@@ -196,8 +207,6 @@ namespace WPFPersonalTracking
             cmbDepartment.SelectedIndex = -1;
             cmbPosition.SelectedIndex = -1;
         }
-
-
         #endregion
     }
 }

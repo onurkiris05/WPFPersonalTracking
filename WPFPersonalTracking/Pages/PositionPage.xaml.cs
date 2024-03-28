@@ -12,28 +12,27 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
 
-namespace WPFPersonalTracking
+namespace WPFPersonalTracking.Pages
 {
     /// <summary>
     /// Interaction logic for PositionPage.xaml
     /// </summary>
     public partial class PositionPage : Window
     {
-        public PositionModel Model { get; set; }
-        private bool IsModelExist() => Model != null && Model.Id != 0;
-
-        PersonaltrackingContext db = new PersonaltrackingContext();
+        public PositionDetailModel Model { get; set; }
+        PersonaltrackingContext _db = new ();
 
         public PositionPage()
         {
             InitializeComponent();
         }
 
+        #region EVENT METHODS
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var list = db.Departments.ToList().OrderBy(x => x.DepartmentName);
+            var list = _db.Departments.ToList().OrderBy(x => x.DepartmentName);
             cmbDepartment.ItemsSource = list;
             cmbDepartment.DisplayMemberPath = "DepartmentName";
             cmbDepartment.SelectedValuePath = "Id";
@@ -60,8 +59,8 @@ namespace WPFPersonalTracking
                     pst.DepartmentId = (int)cmbDepartment.SelectedValue;
                     pst.Id = Model.Id;
                     pst.PositionName = txtPositionName.Text;
-                    db.Positions.Update(pst);
-                    db.SaveChanges();
+                    _db.Positions.Update(pst);
+                    _db.SaveChanges();
                     MessageBox.Show("Position was updated!");
                 }
                 else
@@ -69,13 +68,12 @@ namespace WPFPersonalTracking
                     var position = new Position();
                     position.PositionName = txtPositionName.Text;
                     position.DepartmentId = Convert.ToInt32(cmbDepartment.SelectedValue);
-                    db.Positions.Add(position);
-                    db.SaveChanges();
+                    _db.Positions.Add(position);
+                    _db.SaveChanges();
                     cmbDepartment.SelectedIndex = -1;
                     txtPositionName.Clear();
                     MessageBox.Show("Position was added!");
                 }
-
             }
         }
 
@@ -83,5 +81,10 @@ namespace WPFPersonalTracking
         {
             Close();
         }
+        #endregion
+
+        #region SIDE METHODS
+        private bool IsModelExist() => Model != null && Model.Id != 0; 
+        #endregion
     }
 }

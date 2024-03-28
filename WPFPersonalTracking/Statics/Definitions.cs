@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WPFPersonalTracking
+namespace WPFPersonalTracking.Statics
 {
     public static class Definitions
     {

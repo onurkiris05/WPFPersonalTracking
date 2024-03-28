@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
 
-namespace WPFPersonalTracking
+namespace WPFPersonalTracking.Pages
 {
     /// <summary>
     /// Interaction logic for DepartmentPage.xaml
@@ -21,11 +21,19 @@ namespace WPFPersonalTracking
     public partial class DepartmentPage : Window
     {
         public Department Department { get; set; }
-        private bool IsDepartmentExist() => Department != null && Department.Id != 0;
 
         public DepartmentPage()
         {
             InitializeComponent();
+        }
+
+        #region EVENT METHODS
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (IsDepartmentExist())
+            {
+                txtDepartmentName.Text = Department.DepartmentName;
+            }
         }
 
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -66,14 +74,12 @@ namespace WPFPersonalTracking
 
                 }
             }
-        }
+        } 
+        #endregion
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (IsDepartmentExist())
-            {
-                txtDepartmentName.Text = Department.DepartmentName;
-            }
-        }
+        #region SIDE METHODS
+        private bool IsDepartmentExist() => Department != null && Department.Id != 0;
+
+        #endregion
     }
 }

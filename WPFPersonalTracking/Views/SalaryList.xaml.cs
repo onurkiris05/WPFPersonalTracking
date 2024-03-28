@@ -14,7 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
+using WPFPersonalTracking.Pages;
+using WPFPersonalTracking.Statics;
 
 namespace WPFPersonalTracking.Views
 {
@@ -39,9 +41,11 @@ namespace WPFPersonalTracking.Views
             _positions = _db.Positions.ToList();
 
             FillDataGrid();
-            FillDepartmentCombobox(_db.Departments.ToList());
-            FillPositionCombobox(_db.Positions.ToList());
-            FillMonthCombobox(_db.Salarymonths.ToList());
+        }
+
+        private void gridSalary_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _model = (SalaryDetailModel)gridSalary.SelectedItem;
         }
 
         private void cmbDepartment_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -64,44 +68,7 @@ namespace WPFPersonalTracking.Views
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            var search = _salaries;
-
-            if (txtUserNo.Text.Trim() != "")
-                search = search.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
-            if (txtName.Text.Trim() != "")
-                search = search.Where(x => x.Name.Contains(txtName.Text)).ToList();
-            if (txtSurname.Text.Trim() != "")
-                search = search.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
-            if (txtYear.Text.Trim() != "")
-                search = search.Where(x => x.Year == Convert.ToInt32(txtYear.Text)).ToList();
-            if (cmbDepartment.SelectedIndex != -1)
-                search = search.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
-            if (cmbPosition.SelectedIndex != -1)
-                search = search.Where(x => x.PositionId == GetPositionId()).ToList();
-            if (cmbMonth.SelectedIndex != -1)
-                search = search.Where(x => x.MonthId == GetMonthId()).ToList();
-
-            if (txtSalary.Text.Trim() != "")
-            {
-                switch (true)
-                {
-                    case var _ when rbMore.IsChecked == true:
-                        search = search.Where(x => x.Amount > Convert.ToInt32(txtSalary.Text)).ToList();
-                        break;
-                    case var _ when rbLess.IsChecked == true:
-                        search = search.Where(x => x.Amount < Convert.ToInt32(txtSalary.Text)).ToList();
-                        break;
-                    case var _ when rbEquals.IsChecked == true:
-                        search = search.Where(x => x.Amount == Convert.ToInt32(txtSalary.Text)).ToList();
-                        break;
-                }
-            }
-            gridSalary.ItemsSource = search;
-        }
-
-        private void gridSalary_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            _model = (SalaryDetailModel)gridSalary.SelectedItem;
+            gridSalary.ItemsSource = FilterByFields();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
@@ -167,6 +134,10 @@ namespace WPFPersonalTracking.Views
             }
 
             gridSalary.ItemsSource = _salaries;
+
+            FillDepartmentCombobox(_db.Departments.ToList());
+            FillPositionCombobox(_db.Positions.ToList());
+            FillMonthCombobox(_db.Salarymonths.ToList());
         }
 
         private void FillPositionCombobox(List<Position> positionList)
@@ -205,9 +176,47 @@ namespace WPFPersonalTracking.Views
             cmbPosition.SelectedIndex = -1;
             cmbPosition.ItemsSource = _positions;
             rbMore.IsChecked = false;
+            gridSalary.ItemsSource = _salaries;
             rbLess.IsChecked = false;
             rbEquals.IsChecked = false;
-            gridSalary.ItemsSource = _salaries;
+        }
+
+        private List<SalaryDetailModel> FilterByFields()
+        {
+            var search = _salaries;
+
+            if (txtUserNo.Text.Trim() != "")
+                search = search.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
+            if (txtName.Text.Trim() != "")
+                search = search.Where(x => x.Name.Contains(txtName.Text)).ToList();
+            if (txtSurname.Text.Trim() != "")
+                search = search.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
+            if (txtYear.Text.Trim() != "")
+                search = search.Where(x => x.Year == Convert.ToInt32(txtYear.Text)).ToList();
+            if (cmbDepartment.SelectedIndex != -1)
+                search = search.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
+            if (cmbPosition.SelectedIndex != -1)
+                search = search.Where(x => x.PositionId == GetPositionId()).ToList();
+            if (cmbMonth.SelectedIndex != -1)
+                search = search.Where(x => x.MonthId == GetMonthId()).ToList();
+
+            if (txtSalary.Text.Trim() != "")
+            {
+                switch (true)
+                {
+                    case var _ when rbMore.IsChecked == true:
+                        search = search.Where(x => x.Amount > Convert.ToInt32(txtSalary.Text)).ToList();
+                        break;
+                    case var _ when rbLess.IsChecked == true:
+                        search = search.Where(x => x.Amount < Convert.ToInt32(txtSalary.Text)).ToList();
+                        break;
+                    case var _ when rbEquals.IsChecked == true:
+                        search = search.Where(x => x.Amount == Convert.ToInt32(txtSalary.Text)).ToList();
+                        break;
+                }
+            }
+
+            return search;
         }
 
         private int GetDepartmentId()

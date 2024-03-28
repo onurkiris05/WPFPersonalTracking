@@ -12,9 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
+using WPFPersonalTracking.Statics;
 
-namespace WPFPersonalTracking
+namespace WPFPersonalTracking.Pages
 {
     /// <summary>
     /// Interaction logic for PermissionPage.xaml
@@ -23,7 +24,6 @@ namespace WPFPersonalTracking
     {
         public PermissionDetailModel Model;
         PersonaltrackingContext _db = new();
-        TimeSpan _tsPermissionDay = new();
 
         public PermissionPage()
         {
@@ -37,11 +37,7 @@ namespace WPFPersonalTracking
 
             if (!IsModelExist()) return;
 
-            txtUserNo.Text = Model.UserNo.ToString();
-            txtDayAmount.Text = Model.DayAmount.ToString();
-            txtExplanation.Text = Model.Explanation;
-            dpStart.SelectedDate = Model.StartDate;
-            dpEnd.SelectedDate = Model.EndDate;
+            UpdatePage();
         }
 
         private void dpStart_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
@@ -59,9 +55,7 @@ namespace WPFPersonalTracking
             if (!AreFieldsValid()) return;
 
             if (IsModelExist())
-            {
                 UpdatePermission();
-            }
             else
             {
                 AddPermission();
@@ -74,15 +68,23 @@ namespace WPFPersonalTracking
         }
         #endregion
 
-
         #region SIDE METHODS
         private void CalculateDayAmount()
         {
             if (dpStart.SelectedDate != null && dpEnd.SelectedDate != null)
             {
-                _tsPermissionDay = (TimeSpan)(dpEnd.SelectedDate - dpStart.SelectedDate);
-                txtDayAmount.Text = _tsPermissionDay.TotalDays.ToString();
+                var tsPermissionDay = (TimeSpan)(dpEnd.SelectedDate - dpStart.SelectedDate);
+                txtDayAmount.Text = tsPermissionDay.TotalDays.ToString();
             }
+        }
+
+        private void UpdatePage()
+        {
+            txtUserNo.Text = Model.UserNo.ToString();
+            txtDayAmount.Text = Model.DayAmount.ToString();
+            txtExplanation.Text = Model.Explanation;
+            dpStart.SelectedDate = Model.StartDate;
+            dpEnd.SelectedDate = Model.EndDate;
         }
 
         private bool AreFieldsValid()
@@ -139,10 +141,8 @@ namespace WPFPersonalTracking
             txtDayAmount.Clear();
         }
 
-        private bool IsModelExist()
-        {
-            return Model != null && Model.Id != 0;
-        }
+        private bool IsModelExist() => Model != null && Model.Id != 0;
+
         #endregion
     }
 }

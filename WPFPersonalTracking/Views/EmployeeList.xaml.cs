@@ -14,7 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
+using WPFPersonalTracking.Pages;
 using Task = WPFPersonalTracking.DB.Task;
 
 namespace WPFPersonalTracking.Views
@@ -66,33 +67,12 @@ namespace WPFPersonalTracking.Views
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            // Search with different fields if there is one
-            var searchList = _employeeList;
-
-            if (!string.IsNullOrWhiteSpace(txtUserNo.Text))
-                searchList = searchList.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
-            if (!string.IsNullOrWhiteSpace(txtName.Text))
-                searchList = searchList.Where(x => x.Name.Contains(txtName.Text)).ToList();
-            if (!string.IsNullOrWhiteSpace(txtSurname.Text))
-                searchList = searchList.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
-            if (cmbPosition.SelectedIndex != -1)
-                searchList = searchList.Where(x => x.PositionId == GetPositionId()).ToList();
-            if (cmbDepartment.SelectedIndex != -1)
-                searchList = searchList.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
-
-            gridEmployee.ItemsSource = searchList;
+            gridEmployee.ItemsSource = FilterByFields();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            // Reset all fields
-            txtName.Clear();
-            txtSurname.Clear();
-            txtUserNo.Clear();
-            cmbDepartment.SelectedIndex = -1;
-            cmbPosition.SelectedIndex = -1;
-            cmbPosition.ItemsSource = _positions;
-            gridEmployee.ItemsSource = _employeeList;
+            ClearFields();
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
@@ -167,6 +147,34 @@ namespace WPFPersonalTracking.Views
             cmbDepartment.DisplayMemberPath = "DepartmentName";
             cmbDepartment.SelectedValue = "Id";
             cmbDepartment.SelectedIndex = -1;
+        }
+
+        private void ClearFields()
+        {
+            txtName.Clear();
+            txtSurname.Clear();
+            txtUserNo.Clear();
+            cmbDepartment.SelectedIndex = -1;
+            cmbPosition.SelectedIndex = -1;
+            cmbPosition.ItemsSource = _positions;
+            gridEmployee.ItemsSource = _employeeList;
+        }
+
+        private List<EmployeeDetailModel> FilterByFields()
+        {
+            var searchList = _employeeList;
+
+            if (!string.IsNullOrWhiteSpace(txtUserNo.Text))
+                searchList = searchList.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
+            if (!string.IsNullOrWhiteSpace(txtName.Text))
+                searchList = searchList.Where(x => x.Name.Contains(txtName.Text)).ToList();
+            if (!string.IsNullOrWhiteSpace(txtSurname.Text))
+                searchList = searchList.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
+            if (cmbPosition.SelectedIndex != -1)
+                searchList = searchList.Where(x => x.PositionId == GetPositionId()).ToList();
+            if (cmbDepartment.SelectedIndex != -1)
+                searchList = searchList.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
+            return searchList;
         }
 
         private int GetDepartmentId()

@@ -13,8 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
+using WPFPersonalTracking.Statics;
 
-namespace WPFPersonalTracking
+namespace WPFPersonalTracking.Pages
 {
     /// <summary>
     /// Interaction logic for LoginPage.xaml
@@ -48,6 +49,7 @@ namespace WPFPersonalTracking
 
             if (employee != null && employee.Id != 0)
             {
+                // Login and cache user
                 Visibility = Visibility.Collapsed;
                 var main = new MainWindow();
                 UserStatic.EmployeeId = employee.Id;

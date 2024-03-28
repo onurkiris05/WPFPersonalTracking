@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WPFPersonalTracking.ViewModels
+namespace WPFPersonalTracking.DetailModels
 {
-    public class PositionModel
+    public class PositionDetailModel
     {
         public int Id { get; set; }
         public string PositionName { get; set; }

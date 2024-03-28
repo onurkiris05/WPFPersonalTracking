@@ -10,6 +10,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
 using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.Pages;
+using WPFPersonalTracking.Statics;
+using WPFPersonalTracking.DetailModels;
 
 namespace WPFPersonalTracking
 {
@@ -43,31 +46,34 @@ namespace WPFPersonalTracking
         private void btnEmployee_Click(object sender, RoutedEventArgs e)
         {
             if (!UserStatic.IsAdmin)
-            {
-                Employee employee = _db.Employees.Find(UserStatic.EmployeeId);
-                var model = new EmployeeDetailModel();
-                model.Adress = employee.Adress;
-                model.Birthday = (DateTime)employee.Birthday;
-                model.DepartmentId = employee.DepartmentId;
-                model.Id = employee.Id;
-                model.ImagePath = employee.ImagePath;
-                model.IsAdmin = employee.IsAdmin;
-                model.Name = employee.Name;
-                model.Password = employee.Password;
-                model.PositionId = employee.PositionId;
-                model.Salary = employee.Salary;
-                model.Surname = employee.Surname;
-                model.UserNo = employee.UserNo;
-
-                var page = new EmployeePage();
-                page.Model = model;
-                page.ShowDialog();
-            }
+                ShowOnlyCurrentEmployee();
             else
             {
                 lblWindowName.Content = "Employee List";
                 DataContext = new EmployeeViewModel();
             }
+        }
+
+        private void ShowOnlyCurrentEmployee()
+        {
+            Employee employee = _db.Employees.Find(UserStatic.EmployeeId);
+            var model = new EmployeeDetailModel();
+            model.Adress = employee.Adress;
+            model.Birthday = (DateTime)employee.Birthday;
+            model.DepartmentId = employee.DepartmentId;
+            model.Id = employee.Id;
+            model.ImagePath = employee.ImagePath;
+            model.IsAdmin = employee.IsAdmin;
+            model.Name = employee.Name;
+            model.Password = employee.Password;
+            model.PositionId = employee.PositionId;
+            model.Salary = employee.Salary;
+            model.Surname = employee.Surname;
+            model.UserNo = employee.UserNo;
+
+            var page = new EmployeePage();
+            page.Model = model;
+            page.ShowDialog();
         }
 
         private void btnTask_Click(object sender, RoutedEventArgs e)

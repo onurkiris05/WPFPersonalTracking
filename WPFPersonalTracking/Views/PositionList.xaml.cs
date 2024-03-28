@@ -14,7 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
+using WPFPersonalTracking.Pages;
 
 namespace WPFPersonalTracking.Views
 {
@@ -24,7 +25,7 @@ namespace WPFPersonalTracking.Views
     public partial class PositionList : UserControl
     {
         PersonaltrackingContext _db = new();
-        PositionModel _model = new();
+        PositionDetailModel _model = new();
 
         public PositionList()
         {
@@ -39,7 +40,7 @@ namespace WPFPersonalTracking.Views
 
         private void gridPosition_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _model = (PositionModel)gridPosition.SelectedItem;
+            _model = (PositionDetailModel)gridPosition.SelectedItem;
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -88,10 +89,10 @@ namespace WPFPersonalTracking.Views
                 departmentName = a.Department.DepartmentName
             }).OrderBy(x => x.positionName).ToList();
 
-            var modellist = new List<PositionModel>();
+            var modellist = new List<PositionDetailModel>();
             foreach (var item in list)
             {
-                var model = new PositionModel();
+                var model = new PositionDetailModel();
                 model.Id = item.positionId;
                 model.PositionName = item.positionName;
                 model.DepartmentId = item.departmentId;

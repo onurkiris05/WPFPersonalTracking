@@ -14,7 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WPFPersonalTracking.DB;
-using WPFPersonalTracking.ViewModels;
+using WPFPersonalTracking.DetailModels;
+using WPFPersonalTracking.Pages;
+using WPFPersonalTracking.Statics;
 
 namespace WPFPersonalTracking.Views
 {
@@ -53,7 +55,6 @@ namespace WPFPersonalTracking.Views
         {
             if (cmbDepartment.SelectedIndex != -1)
             {
-                // Filter Position Combobox according to Departments
                 cmbPosition.ItemsSource = _positions.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
                 cmbPosition.DisplayMemberPath = "PositionName";
                 //cmbPosition.SelectedValuePath = "Id";
@@ -76,31 +77,12 @@ namespace WPFPersonalTracking.Views
 
         private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            var search = _searchList;
-
-            if (txtUserNo.Text.Trim() != "")
-                search = search.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
-            if (txtName.Text.Trim() != "")
-                search = search.Where(x => x.Name.Contains(txtName.Text)).ToList();
-            if (txtSurname.Text.Trim() != "")
-                search = search.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
-            if (cmbDepartment.SelectedIndex != -1)
-                search = search.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
-            if (cmbPosition.SelectedIndex != -1)
-                search = search.Where(x => x.PositionId == GetPositionId()).ToList();
-            if (cmbState.SelectedIndex != -1)
-                search = search.Where(x => x.TaskState == GetTaskStateId()).ToList();
-            if (rbStart.IsChecked == true)
-                search = search.Where(x => x.TaskStartDate > dpStart.SelectedDate && x.TaskStartDate < dpDelivery.SelectedDate).ToList();
-            if (rbDelivery.IsChecked == true)
-                search = search.Where(x => x.TaskDeliveryDate > dpStart.SelectedDate && x.TaskDeliveryDate < dpDelivery.SelectedDate).ToList();
-
-            gridTask.ItemsSource = search;
+            gridTask.ItemsSource = FilterByFields();
         }
 
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
-            ResetAllFields();
+            ClearFields();
         }
 
         private void btnUpdate_Click(object sender, RoutedEventArgs e)
@@ -141,10 +123,10 @@ namespace WPFPersonalTracking.Views
             else
             {
                 var task = _db.Tasks.Find(_model.Id);
-                if(UserStatic.IsAdmin)
-                    task.TaskState=Definitions.TaskStates.Approved;
+                if (UserStatic.IsAdmin)
+                    task.TaskState = Definitions.TaskStates.Approved;
                 else
-                    task.TaskState=Definitions.TaskStates.Delivered;
+                    task.TaskState = Definitions.TaskStates.Delivered;
 
                 _db.SaveChanges();
                 MessageBox.Show("Task was updated!");
@@ -218,7 +200,7 @@ namespace WPFPersonalTracking.Views
             cmbState.SelectedIndex = -1;
         }
 
-        private void ResetAllFields()
+        private void ClearFields()
         {
             txtUserNo.Clear();
             txtName.Clear();
@@ -232,6 +214,30 @@ namespace WPFPersonalTracking.Views
             rbDelivery.IsChecked = false;
             rbStart.IsChecked = false;
             gridTask.ItemsSource = _taskList;
+        }
+
+        private List<TaskDetailModel> FilterByFields()
+        {
+            var search = _searchList;
+
+            if (txtUserNo.Text.Trim() != "")
+                search = search.Where(x => x.UserNo == Convert.ToInt32(txtUserNo.Text)).ToList();
+            if (txtName.Text.Trim() != "")
+                search = search.Where(x => x.Name.Contains(txtName.Text)).ToList();
+            if (txtSurname.Text.Trim() != "")
+                search = search.Where(x => x.Surname.Contains(txtSurname.Text)).ToList();
+            if (cmbDepartment.SelectedIndex != -1)
+                search = search.Where(x => x.DepartmentId == GetDepartmentId()).ToList();
+            if (cmbPosition.SelectedIndex != -1)
+                search = search.Where(x => x.PositionId == GetPositionId()).ToList();
+            if (cmbState.SelectedIndex != -1)
+                search = search.Where(x => x.TaskState == GetTaskStateId()).ToList();
+            if (rbStart.IsChecked == true)
+                search = search.Where(x => x.TaskStartDate > dpStart.SelectedDate && x.TaskStartDate < dpDelivery.SelectedDate).ToList();
+            if (rbDelivery.IsChecked == true)
+                search = search.Where(x => x.TaskDeliveryDate > dpStart.SelectedDate && x.TaskDeliveryDate < dpDelivery.SelectedDate).ToList();
+
+            return search;
         }
 
         private int GetDepartmentId()
